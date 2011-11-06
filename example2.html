@@ -1,0 +1,16 @@
+<html><body>
+	<script src="jsGeneticAlgorithm.js"></script>
+	<pre><script>
+		var ga = GeneticAlgorithm({
+			popSize: 50,
+			mutationRate: 0.10,
+			eliteSize: 20,
+			crossoverMethod: '1-point',
+			maxGenerationCount: 30
+		});
+		var fittest = ga.getFittest();
+		document.write('Fittest genome = {' + fittest.join(', ') + '}');
+		document.write('<br>');
+		document.write('Sum of fittest genome = ' + (function () { for (var i=0, sum=0; i<fittest.length; i++) {sum+=fittest[i];} return sum; })())
+	</script></pre>
+</body></html>
