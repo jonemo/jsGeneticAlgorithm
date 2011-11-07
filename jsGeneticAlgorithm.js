@@ -369,10 +369,10 @@ var GeneticAlgorithm = function (spec) {
 	 * Checks if the max generation count stop condition is reached.
 	 */
 	var stopConditionGenerationCount = function () {
-		if (generation > maxGenerationCount) {
-			return true;
+		if (generation < maxGenerationCount) {
+			return false;
 		}
-		return false;
+		return true;
 	};
 	
 	/**
