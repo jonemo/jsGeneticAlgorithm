@@ -480,7 +480,7 @@ var GeneticAlgorithm = function (spec) {
 	 * Stores the maxFitness of the current generation.
 	 * @private 
 	 */
-	var maxFitness;
+	var maxFitness = -Infinity;
 	/** 
 	 * Stores the max Fitness of the previous generation.
 	 * @private 
@@ -500,7 +500,7 @@ var GeneticAlgorithm = function (spec) {
 	// initialize random population
 	for (var i=0; i<popSize; i++) {
 		population[i] = randomFunction();
-	}	
+	}
 	
 	// loop over all new individuals and compute their fitness
 	for (var i=0; i<popSize; i++) {
@@ -530,7 +530,13 @@ var GeneticAlgorithm = function (spec) {
 		if (spec.debug)  console.log('Evaluating fitnesses for generation ' + generation);
 		
 		// reset the intra-generation fitness stats
-		maxFitness = -Infinity; sumFitness = 0;
+		if (eliteSize == 0) {
+			maxFitness = -Infinity;
+		}
+		sumFitness = 0;
+		for (var i=0; i<eliteSize; i++) {
+			sumFitness += prevFitnesses[i];
+		}
 		
 		// loop over all new individuals and compute their fitness
 		for (var i=eliteSize; i<popSize; i++) {
