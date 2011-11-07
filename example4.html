@@ -1,0 +1,136 @@
+<html><body>
+	<script src="jsGeneticAlgorithm.js"></script>
+	<canvas id="fitnessHistoryCanvas" width="1000" height="102"></canvas>  
+	<pre><script>
+		// This is a helper function used in randomFunction() and mutationFunction() passed to the GeneticAlgorithm.
+		// Due to closure, this function will be available inside the Genetic Algorithm for initializing the first 
+		// generation andmutations.
+		var addChildren = function (parentId, depth, ind) {
+			// each node has a maximum of six children nodes
+			for (var i=0; i<6; i++) {
+				if (Math.random() < Math.pow(0.6, depth)) {
+					// create a node with random numerical value
+					ind.push({parent:parentId, value:Math.random()*2-1});
+					// now add children recursively
+					addChildren(ind.length-1, depth+1, ind);
+				}
+			}
+		};
+		
+		// This function evaluates the sum of the products obtained by multiplying every leaf with all of its
+		// ancestor nodes in the tree. The function is used in the fitness function and later when the fittest
+		// individual is displayed (after the genetic algorithm has run).
+		// Due to closure, this function will be available inside the Genetic Algorithm.
+		var evaluateTree = function (ind) {
+			// find all leaves
+			var leaveNodes = [];
+			for (var i=0; i<ind.length; i++) {
+				leaveNodes.push(true);
+			}
+			for (i=ind.length-1; i>=0; i--) {
+				leaveNodes[ind[i].parent] = false;
+			}
+			// evaluate the numerical value encoded in the tree
+			var treeSum = 0;
+			for (i=0; i<ind.length; i++) {
+				if (leaveNodes[i]) {
+					var product = ind[i].value, parentPointer = ind[i].parent;
+					while (parentPointer !== undefined) {
+						product *= ind[parentPointer].value;
+						parentPointer = ind[parentPointer].parent;
+					}
+					treeSum += product;
+				}
+			}
+			
+			return treeSum;
+		};
+		
+		// This is where we define the parameters of the genetic algorithm and the problem specific functions. All 
+		// available parameters, even if the specified value equals the default value. For an explanation of the 
+		// each parameter, see the inline documentation in jsGeneticAlgorithm.js.
+		var ga = GeneticAlgorithm({
+			popSize: 100,
+			randomFunction: function () {
+					// create genome with a top node with random numerical value and no parent
+					var ind = [{parent:undefined, value: Math.random()*20-10}];
+					// recursively add children nodes
+					addChildren(0, 1, ind);
+					
+					return ind; 
+				},
+			mutationFunction: function (ind) {
+					// validate that the individual is valid
+					if (! ind || !ind.length || ind.length < 1) return ind;
+					// decide which node to mutate
+					var k = Math.floor(Math.random()*ind.length);
+					// find all decendant nodes of this node and remove them
+					for (var j=ind.length-1; j>k; j--) {
+						var isSubNode = false, parentPointer = ind[j].parent;
+						while (parentPointer >= k) {
+							if (parentPointer == k) {
+								isSubNode = true;
+								break;
+							}
+							parentPointer = ind[parentPointer].parent;
+						}
+						if (isSubNode) {
+							ind.slice(j, j+1);
+						}
+					}
+					// give the mutated node an arbitrary new numerical value
+					ind[k].value = Math.random()*2-1;
+					// find at what depth node k is
+					var depth = 0;
+					parentPointer = ind[k].parent;
+					while (parentPointer != undefined) {
+						depth++;
+						parentPointer = ind[parentPointer].parent;
+					}
+					// add a new random subtree to node k
+					addChildren(k, depth, ind);
+
+					return ind; 
+				},
+			mutationRate: 0.10,
+			selectionMethod: 'rank-prop',
+			tournamentSize: undefined,
+			eliteSize: 50,
+			crossoverMethod: '1-point',
+			fitnessFunction: function (ind) {
+					// find the difference to pi/10 and return the inverse of its absolute value as fitness
+					return 1/Math.abs(Math.PI/10 - evaluateTree(ind));
+				},
+			stopCondition: 'generation-count',
+			maxGenerationCount: 1000,
+			maxStaticGenerations: undefined,
+			debug: 0
+		});
+		
+		// When code execution arrives here, the genetic algorithm has run and found a solution.
+		
+		// It is now possible to retrieve statistics about the evolution run. Let's use the canvas to 
+		// display a time history of maximum and average fitness.
+		var maxFitnessHistory = ga.getMaxFitnessHistory();
+		var avgFitnessHistory = ga.getAvgFitnessHistory();
+		var maxFitnessEver = maxFitnessHistory[maxFitnessHistory.length-1];
+		var canvas = document.getElementById('fitnessHistoryCanvas');
+		var ctx = canvas.getContext("2d"); 
+		for (var i=0; i<maxFitnessHistory.length; i=i+1) {
+			ctx.fillStyle = "rgb(0,0,200)"; 
+			ctx.fillRect (i/1, 100-Math.ceil(avgFitnessHistory[i]/maxFitnessEver*97), 1, 2);
+			ctx.fillStyle = "rgb(200,0,0)"; 
+			ctx.fillRect (i/1, 100-Math.ceil(maxFitnessHistory[i]/maxFitnessEver*97), 1, 2);
+		}
+		
+		// It is also possible to query for the fittest individual discovered
+		var fittest = ga.getFittest();
+		document.write('Fittest genome evaluates to ' + evaluateTree(fittest) + ' resulting in a fitness of ' + maxFitnessHistory[maxFitnessHistory.length-1] + '<br>');
+		
+		// display the tree described by the genome of the fittest individual
+		var depths = [0];
+		for (var i=0; i<fittest.length; i++) {
+			document.write('[' + i + '] ' + fittest[i].value + ', parent: ' + fittest[i].parent + '<br>');
+		}
+	</script></pre>
+</body></html>
