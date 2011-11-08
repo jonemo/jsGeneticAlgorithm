@@ -1,10 +1,10 @@
 jsGeneticAlgorithm
-========
+==================
 
 This is an implementation of a genetic algorithm in Javascript. Genetic algorithms are sometimes called Evolutionary Algorithms and you can read a lot about them <a href="http://en.wikipedia.org/wiki/Genetic_algorithm">on Wikipedia</a>.
 
 Usage
----------------------
+-----
 
 The entire algorithm (and documentation) is contained within the file jsGeneticAlgorithm.js. You can execute the code in various ways: Using your browser's Javascript console, using a Javascript engine, or by embedding it into an HTML site. Most people will probably embed the code in an HTML site. Several example HTML files are included in the repository. The following is a quick tour through the example files covering everything you can do with this class.
 
@@ -209,7 +209,7 @@ This fitness metric used in this example is arbitrary and as far as I can tell i
 
 To encode such a tree in a genome, every node becomes an entry in the array and stores its numeric value and references its parent node. The function that creates such trees randomly is shown in this snippet:
 
-```html
+```javascript
 randomFunction: function () {
 		// create genome with a top node with random numerical value and no parent
 		var ind = [{parent:undefined, value: Math.random()*20-10}];
@@ -224,7 +224,7 @@ It creates a first node (every tree has at least one node) and then uses ```addC
 
 The mutation function looks more complex but is actually conceptually very similar:
 
-```html
+```javascript
 mutationFunction: function (ind) {
 		// validate that the individual is valid
 		if (! ind || !ind.length || ind.length < 1) return ind;
@@ -267,6 +267,4 @@ In this example we use rank-proportional selection, a population size of 100 ind
 Development Status
 ---------------------
 
-This code is currently in development. More documentation is forthcoming over the next few days. 
-
-Last updated November 5, 2011.
+This code is currently in development. More documentation is forthcoming. Additional functionality will be added as I need them for my own purposes or on request.
