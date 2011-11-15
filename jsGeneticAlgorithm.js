@@ -1,8 +1,4 @@
 /**
- * 
- */
-
-/**
  * @author Jonas Neubert mailto:jn@jonemo.de http://www.jonasneubert.com
  *
  * Runs a genetic algorithm. 
@@ -120,6 +116,11 @@ var GeneticAlgorithm = function (spec) {
 	*/
 	var avgFitnessHistory = [];
 	/** 
+	* Time history of the standard deviation of fitness encountered in every generation.
+	* @private 
+	*/
+	var stdevFitnessHistory = [];	
+	/** 
 	* The ranks of all individuals [0..popSize], only gets populated when required. entry 0 in ranks is the worst individual.
 	* @private 
 	*/
@@ -129,6 +130,16 @@ var GeneticAlgorithm = function (spec) {
 	* @private 
 	*/
 	var maxFitness = -Infinity;
+	/** 
+	* Stores a temporary sum used to calculate the standard deviation of a generation of the current generation.
+	* @private 
+	*/
+	var stdevSum;	
+	/** 
+	* Stores the mean of fitnesses of the current generation.
+	* @private 
+	*/
+	var mean;	
 	/** 
 	* Stores the max Fitness of the previous generation.
 	* @private 
@@ -554,7 +565,13 @@ var GeneticAlgorithm = function (spec) {
 		
 		// do the bookkeeping (for histories)
 		maxFitnessHistory.push(maxFitness);
-		avgFitnessHistory.push(sumFitness/popSize);
+		mean = sumFitness/popSize;
+		avgFitnessHistory.push(mean);
+		stdevSum = 0;
+		for (i=0; i<popSize; i++) {
+			stdevSum += (mean - fitnesses[i]) * (mean - fitnesses[i]);
+		}
+		stdevFitnessHistory.push(Math.sqrt(stdevSum/popSize));
 		
 		// update counter that keeps track of how long the max fitness hasn't changed (used by some stop conditions)
 		if (prevMaxFitness <= maxFitness) {
@@ -595,6 +612,15 @@ var GeneticAlgorithm = function (spec) {
 		*/		
 		getAvgFitnessHistory : function () {
 			return avgFitnessHistory;
-		}		
+		},
+		
+		/**
+		* Return an array with the average (mean) fitness for each generation.
+		* @function
+		* @public
+		*/		
+		getStdevFitnessHistory : function () {
+			return stdevFitnessHistory;
+		}
 	};
 };
