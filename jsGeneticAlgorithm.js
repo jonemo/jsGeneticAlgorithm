@@ -1,5 +1,5 @@
 /**
- * @author Jonas Neubert mailto:jn@jonemo.de http://www.jonasneubert.com
+ * @author Jonas Neubert mailto:jn@jonasneubert.de http://www.jonasneubert.com
  *
  * Runs a genetic algorithm. 
  *
@@ -9,21 +9,6 @@
  *
  * Through supplying functions and parameters, the problem statement and the genetic
  * algorithm can be changed.
- *
- * Selection methods (from wikipedia):
- * If this procedure is repeated until there are enough selected individuals, this 
- * selection method is called fitness proportionate selection or roulette-wheel 
- * selection. If instead of a single pointer spun multiple times, there are multiple, 
- * equally spaced pointers on a wheel that is spun once, it is called stochastic 
- * universal sampling. Repeatedly selecting the best individual of a randomly chosen 
- * subset is tournament selection. Taking the best half, third or another proportion 
- * of the individuals is truncation selection.
- *
- * Selection methods available here:
- * - fitness proportionate selection
- * - tournament selection
- * - truncation selection
- *
  *
  *
  * @constructor
@@ -41,7 +26,7 @@
  * @param {int}				spec.maxStaticGenerations	Used if spec.stopCondition is 'fitness-static'
  * @param {int}				spec.debug					If debug = 1, debug messages are output using console.log().
  *	
- * @return {Cube} Cube Object
+ * @return {GeneticAlgorithm} Genetic Algorithm Object
  */		
 var GeneticAlgorithm = function (spec) {
 	"use strict";
